@@ -2,6 +2,9 @@
 
 This little project is intends to read a iCAL Stream and highlight connected LEDs in their equivalent color according to the color of recycling bins.
 
+> **DISCLAIMER**
+> This is _work in progress_ and will not work yet 
+
 In Germany this is mostly something like this:
 
 * Blue: Paper
@@ -10,9 +13,17 @@ In Germany this is mostly something like this:
 * Green/Brown : Bio-Waste / "organic"
 * Gray/Pink : residual waste
 
-Depending on your local waste provider, you might need to adjust this.
+## Mapping
 
-## Config
+This project uses [iCal.js](https://github.com/mozilla-comm/ical.js/wiki)
+
+## Installation
+
+
+
+## Config Adjustmends
+
+Depending on your local waste provider, you might need to adjust this.
 
 in file `config/default.json`
 

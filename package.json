@@ -1,33 +1,36 @@
 {
-  "name"            : "rpi-recycling-led",
-  "version"         : "0.0.1",
-  "description"     : "Node App to query an iCAL stream and light up LEDs according to recycling bin colors",
-  "main"            : "index.js",
-  "scripts"         : {
-    "start" : "node index.js",
-    "test"  : "echo \"Error: no test specified\" && exit 1"
+  "name": "rpi-recycling-led",
+  "version": "0.0.1",
+  "description": "Node App to query an iCAL stream and light up LEDs according to recycling bin colors",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository"      : {
-    "type" : "git",
-    "url"  : "git+https://github.com/bartrail/rpi-recycling-led.git"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bartrail/rpi-recycling-led.git"
   },
-  "keywords"        : [
+  "keywords": [
     "raspberry-pi",
     "recycling",
     "ical",
     "led"
   ],
-  "author"          : "Conrad Barthelmes",
-  "license"         : "MIT",
-  "bugs"            : {
-    "url" : "https://github.com/bartrail/rpi-recycling-led/issues"
+  "author": "Conrad Barthelmes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bartrail/rpi-recycling-led/issues"
   },
-  "homepage"        : "https://github.com/bartrail/rpi-recycling-led#readme",
-  "dependencies"    : {
-    "config"  : "2.0.1",
-    "ical.js" : "1.2.2"
+  "homepage": "https://github.com/bartrail/rpi-recycling-led#readme",
+  "dependencies": {
+    "config": "2.0.1",
+    "ical.js": "1.2.2",
+    "lodash": "4.17.11",
+    "request": "2.88.0",
+    "request-promise": "4.2.2"
   },
-  "devDependencies" : {
-    "standard" : "12.0.1"
+  "devDependencies": {
+    "standard": "12.0.1"
   }
 }
