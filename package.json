@@ -1,0 +1,25 @@
+{
+  "name": "rpi-recycling-led",
+  "version": "1.0.0",
+  "description": "Node App to query an iCAL stream and light up LEDs according to recycling bin colors",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bartrail/rpi-recycling-led.git"
+  },
+  "keywords": [
+    "raspberry-pi",
+    "recycling",
+    "ical",
+    "led"
+  ],
+  "author": "Conrad Barthelmes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bartrail/rpi-recycling-led/issues"
+  },
+  "homepage": "https://github.com/bartrail/rpi-recycling-led#readme"
+}
