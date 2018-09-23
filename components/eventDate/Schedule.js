@@ -11,6 +11,9 @@ class Schedule {
 
   constructor (eventDates) {
     this.eventDates = eventDates
+    this.today      = new Date()
   }
+
+
 
 }

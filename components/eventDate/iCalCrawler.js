@@ -18,18 +18,22 @@ class iCalCrawler {
   constructor (uri) {
     this.uri        = uri
     this.rawContent = ''
-    this.iCalData   = {}
   }
 
   fetch () {
     return new Promise((resolve, reject) => {
       rp({
-        uri: this.uri
+        uri                    : this.uri,
+        resolveWithFullResponse: true
       }).then((response) => {
 
-        this.rawContent = response
-        let eventDates  = this.parse()
-        resolve(eventDates)
+        if (response.statusCode >= 200 && response.statusCode <= 300) {
+          this.rawContent = response.body
+          let eventDates  = this.parse()
+          resolve(eventDates)
+        } else {
+          reject(response)
+        }
 
       }).catch((error) => {
 

@@ -16,16 +16,17 @@ class EventDate {
    * @param {ICAL.Event} iCalEvent
    */
   constructor (iCalEvent) {
-
+    this.uid         = iCalEvent.uid
     this.summary     = iCalEvent.summary
     this.startDate   = iCalEvent.startDate
     this.endDate     = iCalEvent.endDate
+    this.organizer   = iCalEvent.organizer
     this.location    = iCalEvent.location
     this.description = iCalEvent.description
   }
 
   toString () {
-    return '{summary}\nDates: [{startDate}] - [{endDate}]\nLocation: {location}\nDescription: {description}\n'.parse({
+    return 'Summary: {summary}\nDates: [{startDate}] - [{endDate}]\nLocation: {location}\nDescription: {description}\n'.parse({
       summary    : this.summary,
       startDate  : this.startDate,
       endDate    : this.endDate,

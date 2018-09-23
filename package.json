@@ -24,6 +24,8 @@
   },
   "homepage": "https://github.com/bartrail/rpi-recycling-led#readme",
   "dependencies": {
+    "command-line-args": "5.0.2",
+    "command-line-usage": "5.0.5",
     "config": "2.0.1",
     "ical.js": "1.2.2",
     "lodash": "4.17.11",
