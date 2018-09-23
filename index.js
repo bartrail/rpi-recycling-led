@@ -88,7 +88,8 @@ crawler.fetch().then((eventDates) => {
 
 }).catch((error) => {
 
-  console.log('Error fetching or parsing data')
+  console.error('Error fetching or parsing data')
+  console.error(error);
 
 })
 

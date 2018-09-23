@@ -15,12 +15,14 @@ In Germany this is mostly something like this:
 
 ## Installation
 
-clone the project on your Raspberry PI and run node.js
+1. Install NodeJS on your Raspberry PI https://thisdavej.com/beginners-guide-to-installing-node-js-on-a-raspberry-pi/#install-node
+2. Clone the project on your Raspberry PI and run node.js
+
 ```
 cd ~
 git clone https://github.com/bartrail/rpi-recycling-led.git
 cd rpi-recycling-led
-npm start
+npm start --run
 
 ```
 

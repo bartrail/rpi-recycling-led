@@ -1,12 +1,16 @@
 {
-  "iCalURL" : "http://neuss.mein-abfallkalender.de/ical.ics?sid=25167&cd=inline&ft=12&fp=next_1000&wids=645,646,647,648,649,650",
-  "status"  : {
+  "iCalURL"  : "http://neuss.mein-abfallkalender.de/ical.ics?sid=25167&cd=inline&ft=12&fp=next_1000&wids=645,646,647,648,649,650",
+  "status"   : {
     "error" : {
       "gpio" : 12
       // if error occured, this gpio will blink
     }
   },
-  "leds"    : [
+  "interval" : {
+    "tomorrow" : "GLOW",
+    "today"    : "BLINK"
+  },
+  "leds"     : [
     {
       // Paper
       "summary" : "Papiertonne",

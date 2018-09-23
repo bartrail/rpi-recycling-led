@@ -7,7 +7,11 @@
  * Time: 16:50
  */
 
-const parse = require('./../../util/string.parse.js')
+const _      = require('lodash')
+const parse  = require('./../../util/string.parse.js')
+const config = require('config')
+
+let leds = config.get('leds')
 
 class EventDate {
 
@@ -23,6 +27,16 @@ class EventDate {
     this.organizer   = iCalEvent.organizer
     this.location    = iCalEvent.location
     this.description = iCalEvent.description
+
+    this.led = {}
+
+    _.forEach(leds, (led, idx) => {
+      if (led.summary === this.summary) {
+        this.led = led
+      }
+    })
+
+    this.initialized = _.isEmpty(this.led)
   }
 
   toString () {
