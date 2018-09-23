@@ -1,0 +1,30 @@
+{
+  "iCalURL" : "http://neuss.mein-abfallkalender.de/ical.ics?sid=25167&cd=inline&ft=12&fp=next_1000&wids=645,646,647,648,649,650",
+  "leds"    : [
+    {
+      "type"  : "Paper",
+      "color" : "Blue",
+      "gpio"  : 10
+    },
+    {
+      "type"  : "Recycling",
+      "color" : "Yellow",
+      "gpio"  : 11
+    },
+    {
+      "type"  : "Noxious Substances",
+      "color" : "Red",
+      "gpio"  : 12
+    },
+    {
+      "type"  : "Bio-Waste",
+      "color" : "Green",
+      "gpio"  : 13
+    },
+    {
+      "type"  : "Residual Waste",
+      "color" : "Gray",
+      "gpio"  : 14
+    }
+  ]
+}
