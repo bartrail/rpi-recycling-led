@@ -7,9 +7,10 @@
  * Time: 16:50
  */
 
-const _      = require('lodash')
-const parse  = require('./../../util/string.parse.js')
-const config = require('config')
+const _          = require('lodash')
+const {DateTime} = require('luxon')
+const parse      = require('./../../util/string.parse.js')
+const config     = require('config')
 
 let leds = config.get('leds')
 
@@ -20,14 +21,39 @@ class EventDate {
    * @param {ICAL.Event} iCalEvent
    */
   constructor (iCalEvent) {
-    this.uid         = iCalEvent.uid
-    this.summary     = iCalEvent.summary
-    this.startDate   = iCalEvent.startDate
-    this.endDate     = iCalEvent.endDate
-    this.organizer   = iCalEvent.organizer
-    this.location    = iCalEvent.location
+    /**
+     * @type {String}
+     */
+    this.uid = iCalEvent.uid
+    /**
+     * @type {String}
+     */
+    this.summary = iCalEvent.summary
+    let jsDate = iCalEvent.startDate.toJSDate()
+    let iso    = jsDate.toISOString()
+    /**
+     * @type {DateTime}
+     */
+    this.startDate = DateTime.fromISO(iCalEvent.startDate.toJSDate().toISOString())
+    /**
+     * @type {DateTime}
+     */
+    this.endDate = DateTime.fromISO(iCalEvent.endDate.toJSDate().toISOString())
+    /**
+     * @type {String}
+     */
+    this.organizer = iCalEvent.organizer
+    /**
+     * @type {String}
+     */
+    this.location = iCalEvent.location
+    /**
+     * @type {String}
+     */
     this.description = iCalEvent.description
-
+    /**
+     * @type {Object}
+     */
     this.led = {}
 
     _.forEach(leds, (led, idx) => {

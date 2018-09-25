@@ -22,7 +22,8 @@ In Germany this is mostly something like this:
 cd ~
 git clone https://github.com/bartrail/rpi-recycling-led.git
 cd rpi-recycling-led
-npm start --run
+npm install
+npm start
 
 ```
 

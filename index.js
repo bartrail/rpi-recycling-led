@@ -11,6 +11,7 @@ const commandLineArgs  = require('command-line-args')
 const commandLineUsage = require('command-line-usage')
 const _                = require('lodash')
 const config           = require('config')
+const {DateTime}       = require('luxon')
 
 const iCalCrawler = require('./components/eventDate/iCalCrawler.js')
 const Schedule    = require('./components/eventDate/Schedule.js')
@@ -34,7 +35,11 @@ const sections = [
         description: 'runs the app :)'
       },
       {
-        name       : 'list-events',
+        name       : 'date',
+        description: 'The default start date (typically "today"). Can be changed to any date with the format YYYY-MM-DD (ISO 8601) to simulate another day'
+      },
+      {
+        name       : 'listEvents',
         description: 'Lists all events found in the given URL (for debugging purposes)'
       },
       {
@@ -55,13 +60,19 @@ const usage = commandLineUsage(sections)
 const optionDefinitions = [
   {name: 'run', type: Boolean, default: true},
   {name: 'listEvents', type: Boolean},
+  {name: 'date', type: String, defaultValue: DateTime.local().toFormat('y-LL-d')},
   {name: 'verbose', alias: 'v', type: Boolean},
   {name: 'help', alias: 'h', type: Boolean},
 ]
 
 const options = commandLineArgs(optionDefinitions)
 
-let leds = config.get('leds')
+let startDate = DateTime.fromISO(options.date)
+
+if (!startDate.isValid) {
+  console.error('Invalid Date [%s]: %s', options.date, startDate.invalidReason)
+  return
+}
 
 let crawler = new iCalCrawler(url)
 
@@ -84,12 +95,14 @@ crawler.fetch().then((eventDates) => {
     return
   }
 
-  let schedule = new Schedule(eventDates)
+  let schedule = new Schedule(startDate, eventDates)
+
+
 
 }).catch((error) => {
 
   console.error('Error fetching or parsing data')
-  console.error(error);
+  console.error(error)
 
 })
 
