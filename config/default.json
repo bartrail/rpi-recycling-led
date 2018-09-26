@@ -15,7 +15,7 @@
       // Paper
       "summary" : "Papiertonne",
       "color"   : "Blue",
-      "gpio"    : 10
+      "gpio"    : 21
     },
     {
       // Recycling
