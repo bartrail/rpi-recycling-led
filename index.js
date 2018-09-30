@@ -71,6 +71,7 @@ let startDate = DateTime.fromISO(options.date)
 
 if (!startDate.isValid) {
   console.error('Invalid Date [%s]: %s', options.date, startDate.invalidReason)
+  exitHandler({exit: true}, 1);
   return
 }
 
@@ -85,19 +86,20 @@ crawler.fetch().then((eventDates) => {
 
     // abort if we don't have the --run option
     if (options.run !== true) {
+      exitHandler({exit: true}, 1);
       return
-
     }
   }
 
   if (options.run !== true) {
     console.log('Please start with --run to run it')
     console.log(usage)
+    exitHandler({exit: true}, 1);
     return
   }
 
   schedule = new Schedule(startDate, eventDates)
-  schedule.run();
+  schedule.run()
 
 }).catch((error) => {
 
@@ -114,8 +116,10 @@ function exitHandler (options, exitCode) {
     console.log('Exit Code: [%s]', exitCode)
   }
   if (options.exit) {
-    schedule.isRunning = false
-    schedule.unexportOnClose()
+    if (_.isObject(schedule)) {
+      schedule.isRunning = false
+      schedule.unexportOnClose()
+    }
   }
 }
 
