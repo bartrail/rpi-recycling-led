@@ -75,6 +75,7 @@ if (!startDate.isValid) {
 }
 
 let crawler = new iCalCrawler(url)
+let schedule
 
 crawler.fetch().then((eventDates) => {
   if (options.listEvents) {
@@ -95,9 +96,8 @@ crawler.fetch().then((eventDates) => {
     return
   }
 
-  let schedule = new Schedule(startDate, eventDates)
-
-
+  schedule = new Schedule(startDate, eventDates)
+  schedule.run();
 
 }).catch((error) => {
 
@@ -105,5 +105,39 @@ crawler.fetch().then((eventDates) => {
   console.error(error)
 
 })
+
+function exitHandler (options, exitCode) {
+  if (options.cleanup) {
+    console.log('clean up')
+  }
+  if (exitCode || exitCode === 0) {
+    console.log('Exit Code: [%s]', exitCode)
+  }
+  if (options.exit) {
+    schedule.isRunning = false
+    schedule.unexportOnClose()
+  }
+}
+
+process.stdin.resume()
+
+//do something when app is closing
+process.on('exit', exitHandler.bind(null, {cleanup: true}))
+
+//catches ctrl+c event
+process.on('SIGINT', exitHandler.bind(null, {exit: true}))
+
+// catches "kill pid" (for example: nodemon restart)
+process.on('SIGUSR1', exitHandler.bind(null, {exit: true}))
+process.on('SIGUSR2', exitHandler.bind(null, {exit: true}))
+process.on('SIGTERM', exitHandler.bind(null, {exit: true}))
+
+//catches uncaught exceptions
+process.on('uncaughtException', exitHandler.bind(null, {exit: true}))
+
+// while (schedule.isRunning) {
+//
+//   schedule.lightUp()
+// }
 
 

@@ -7,8 +7,6 @@
  * Time: 18:48
  */
 
-const Gpio = require('onoff').Gpio;
-
 const _          = require('lodash')
 const {DateTime} = require('luxon')
 
@@ -20,7 +18,6 @@ class Schedule {
    * @param {EventDate[]} eventDates
    */
   constructor (startDate, eventDates) {
-
     /**
      * @type {EventDate[]}
      */
@@ -44,10 +41,40 @@ class Schedule {
      */
     this.tomorrowList = []
 
-    this.groupEventDates();
+    this.isRunning = false
+
+    this.today = {
+      intervalId: null,
+      timeoutId : null
+    }
+
+    this.tomorrow = {
+      intervalId : null
+    };
+
+    this.groupEventDates()
   }
 
-  groupEventDates() {
+  run () {
+    this.isRunning = true
+
+    this.today.intervalId = setInterval(() => {
+      this.lightOffTodayList()
+      this.today.timeoutId = setTimeout(() => {
+        this.lightUpTodayList()
+      }, 250)
+    }, 500)
+  }
+
+  stop () {
+    this.isRunning = false
+
+    clearInterval(this.today.intervalId);
+    clearTimeout(this.today.timeoutId);
+
+  }
+
+  groupEventDates () {
 
     // detect events for today
     _.forEach(this.eventDates, (eventDate, idx) => {
@@ -63,30 +90,42 @@ class Schedule {
       }
     })
 
-    this.lightUp();
   }
 
-  lightUp () {
+  lightOffTodayList () {
+    _.forEach(this.todayList, (eventDate, idx) => {
+      eventDate.useLed(0)
+    })
+  }
 
-
-    const useLed = function (led, value) {
-      led.writeSync(value);
+  lightUpTodayList () {
+    if (false === this.isRunning) {
+      return
     }
+    _.forEach(this.todayList, (eventDate, idx) => {
+      eventDate.useLed(1);
+    })
+  }
 
-    let led;
+  lightOffTomorrow() {
+    _.forEach(this.tomorrowList, (eventDate, idx) => {
+      eventDate.useLed(0);
+    })
+  }
 
-    if (Gpio.accessible) {
-      led = new Gpio(21, 'out');
-    } else {
-      led = {
-        writeSync: function (value) {
-          console.log('virtual led now uses value: ' + value);
-        }
-      };
+  lightUpTomorrow () {
+    if (false === this.isRunning) {
+      return
     }
+    _.forEach(this.tomorrowList, (eventDate, idx) => {
+      eventDate.useLed(1);
+    })
+  }
 
-    useLed(led, 1);
-
+  unexportOnClose () {
+    _.forEach(this.eventDates, (eventDate, idx) => {
+      eventDate.unexport()
+    })
   }
 
 }

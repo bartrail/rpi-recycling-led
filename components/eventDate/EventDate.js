@@ -11,6 +11,7 @@ const _          = require('lodash')
 const {DateTime} = require('luxon')
 const parse      = require('./../../util/string.parse.js')
 const config     = require('config')
+const Gpio       = require('onoff').Gpio
 
 let leds = config.get('leds')
 
@@ -63,6 +64,36 @@ class EventDate {
     })
 
     this.initialized = _.isEmpty(this.led)
+
+    if (this.initialized) {
+      this.GPIO = new Gpio(this.led.gpio, 'out')
+    }
+  }
+
+  /**
+   * https://www.w3schools.com/nodejs/nodejs_raspberrypi_led_pushbutton.asp
+   * @param {Number} value [0|1]
+   */
+  useLed (value) {
+    if (false === this.isInitialized) {
+      return
+    }
+
+
+
+    if (Gpio.accessible) {
+      this.GPIO.writeSync(value)
+    } else {
+      console.log('LED [%s] now uses value [%s]', led, value)
+    }
+  }
+
+  /**
+   * called on shutdown
+   */
+  unexport () {
+    this.GPIO.writeSync(0)
+    this.GPIO.unexport()
   }
 
   toString () {
