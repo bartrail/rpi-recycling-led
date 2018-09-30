@@ -63,7 +63,7 @@ class EventDate {
       }
     })
 
-    this.initialized = _.isEmpty(this.led)
+    this.initialized = false ===_.isEmpty(this.led)
 
     if (this.initialized) {
       this.GPIO = new Gpio(this.led.gpio, 'out')
