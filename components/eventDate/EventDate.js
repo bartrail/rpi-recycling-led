@@ -63,7 +63,7 @@ class EventDate {
       }
     })
 
-    console.log(this.led);
+    //console.log(this.led);
 
     this.initialized = false ===_.isEmpty(this.led)
 

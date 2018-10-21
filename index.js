@@ -81,7 +81,7 @@ let schedule
 crawler.fetch().then((eventDates) => {
   if (options.listEvents) {
     _.forEach(eventDates, (eventDate, idx) => {
-      console.log(eventDate.toString())
+      //console.log(eventDate.toString())
     })
 
     // abort if we don't have the --run option

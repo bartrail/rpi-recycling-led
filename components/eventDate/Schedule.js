@@ -28,8 +28,8 @@ class Schedule {
       }
     })
 
-    this.today    = startDate
-    this.tomorrow = this.today.plus({days: 1})
+    this.todayDate    = startDate
+    this.tomorrowDate = this.todayDate.plus({days: 1})
 
     /**
      * @type {EventDate[]}
@@ -49,8 +49,8 @@ class Schedule {
     }
 
     this.tomorrow = {
-      intervalId : null
-    };
+      intervalId: null
+    }
 
     this.groupEventDates()
   }
@@ -69,23 +69,22 @@ class Schedule {
   stop () {
     this.isRunning = false
 
-    clearInterval(this.today.intervalId);
-    clearTimeout(this.today.timeoutId);
-
+    clearInterval(this.today.intervalId)
+    clearTimeout(this.today.timeoutId)
   }
 
   groupEventDates () {
 
     // detect events for today
     _.forEach(this.eventDates, (eventDate, idx) => {
-      if (eventDate.startDate.hasSame(this.today, 'day')) {
+      if (eventDate.startDate.hasSame(this.todayDate, 'day')) {
         this.todayList.push(eventDate)
       }
     })
 
     // detect events for tomorrow
     _.forEach(this.eventDates, (eventDate, idx) => {
-      if (eventDate.startDate.hasSame(this.tomorrow, 'day')) {
+      if (eventDate.startDate.hasSame(this.tomorrowDate, 'day')) {
         this.tomorrowList.push(eventDate)
       }
     })
@@ -103,13 +102,13 @@ class Schedule {
       return
     }
     _.forEach(this.todayList, (eventDate, idx) => {
-      eventDate.useLed(1);
+      eventDate.useLed(1)
     })
   }
 
-  lightOffTomorrow() {
+  lightOffTomorrow () {
     _.forEach(this.tomorrowList, (eventDate, idx) => {
-      eventDate.useLed(0);
+      eventDate.useLed(0)
     })
   }
 
@@ -118,7 +117,7 @@ class Schedule {
       return
     }
     _.forEach(this.tomorrowList, (eventDate, idx) => {
-      eventDate.useLed(1);
+      eventDate.useLed(1)
     })
   }
 
