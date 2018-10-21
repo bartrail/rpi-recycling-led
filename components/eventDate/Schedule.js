@@ -9,6 +9,7 @@
 
 const _          = require('lodash')
 const {DateTime} = require('luxon')
+const config     = require('config')
 
 class Schedule {
 
@@ -58,12 +59,24 @@ class Schedule {
   run () {
     this.isRunning = true
 
+    let todayInterval    = config.get('interval').today
+    let tomorrowInterval = config.get('interval').tomorrow
+
+    this.lightUpTodayList()
     this.today.intervalId = setInterval(() => {
       this.lightOffTodayList()
       this.today.timeoutId = setTimeout(() => {
         this.lightUpTodayList()
-      }, 250)
-    }, 500)
+      }, todayInterval)
+    }, todayInterval * 2)
+
+    this.lightUpTomorrowList()
+    this.tomorrow.intervalId = setInterval(() => {
+      this.lightOffTomorrowList()
+      this.tomorrow.timeoutId = setTimeout(() => {
+        this.lightUpTomorrowList()
+      }, tomorrowInterval)
+    }, tomorrowInterval * 2)
   }
 
   stop () {
@@ -106,13 +119,17 @@ class Schedule {
     })
   }
 
-  lightOffTomorrow () {
+  lightOffTomorrowList () {
+    if (false === this.isRunning) {
+      return
+    }
+
     _.forEach(this.tomorrowList, (eventDate, idx) => {
       eventDate.useLed(0)
     })
   }
 
-  lightUpTomorrow () {
+  lightUpTomorrowList () {
     if (false === this.isRunning) {
       return
     }

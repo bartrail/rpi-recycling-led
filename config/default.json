@@ -7,8 +7,8 @@
     }
   },
   "interval" : {
-    "tomorrow" : "GLOW",
-    "today"    : "BLINK"
+    "tomorrow" : 5000,
+    "today"    : 1000
   },
   "leds"     : [
     {

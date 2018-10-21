@@ -12,11 +12,13 @@ const commandLineUsage = require('command-line-usage')
 const _                = require('lodash')
 const config           = require('config')
 const {DateTime}       = require('luxon')
+const Gpio             = require('onoff').Gpio
 
 const iCalCrawler = require('./components/eventDate/iCalCrawler.js')
 const Schedule    = require('./components/eventDate/Schedule.js')
 
-let url = config.get('iCalURL')
+let url     = config.get('iCalURL')
+let ledList = config.get('leds')
 
 const sections = [
   {
@@ -43,6 +45,10 @@ const sections = [
         description: 'Lists all events found in the given URL (for debugging purposes)'
       },
       {
+        name       : 'testLeds',
+        description: 'Test if all LEDs are working'
+      },
+      {
         name       : 'verbose',
         // typeLabel  : '{underline file}',
         description: 'Verbose output'
@@ -59,10 +65,11 @@ const usage = commandLineUsage(sections)
 
 const optionDefinitions = [
   {name: 'run', type: Boolean, default: true},
-  {name: 'listEvents', type: Boolean},
+  {name: 'listEvents', type: Boolean, default: false},
+  {name: 'testLeds', type: Boolean, default: false},
   {name: 'date', type: String, defaultValue: DateTime.local().toFormat('y-LL-d')},
   {name: 'verbose', alias: 'v', type: Boolean},
-  {name: 'help', alias: 'h', type: Boolean},
+  {name: 'help', alias: 'h', type: Boolean, default: false},
 ]
 
 const options = commandLineArgs(optionDefinitions)
@@ -71,42 +78,60 @@ let startDate = DateTime.fromISO(options.date)
 
 if (!startDate.isValid) {
   console.error('Invalid Date [%s]: %s', options.date, startDate.invalidReason)
-  exitHandler({exit: true}, 1);
+  exitHandler({exit: true}, 1)
   return
 }
 
-let crawler = new iCalCrawler(url)
-let schedule
+for (let i = 0, ii = ledList.length; i < ii; i++) {
 
-crawler.fetch().then((eventDates) => {
-  if (options.listEvents) {
-    _.forEach(eventDates, (eventDate, idx) => {
-      //console.log(eventDate.toString())
-    })
+  if (options.verbose) {
+    console.log('GPIO [%s] - Color: [%s] - Summary: [%s]', ledList[i].gpio, ledList[i].color, ledList[i].summary)
+  }
 
-    // abort if we don't have the --run option
-    if (options.run !== true) {
-      exitHandler({exit: true}, 1);
-      return
+  if (Gpio.accessible) {
+    ledList[i].led = new Gpio(ledList[i].gpio, 'out')
+    if (options.testLeds) {
+      ledList[i].led.writeSync(1)
     }
   }
 
-  if (options.run !== true) {
-    console.log('Please start with --run to run it')
-    console.log(usage)
-    exitHandler({exit: true}, 1);
-    return
-  }
+}
 
-  schedule = new Schedule(startDate, eventDates)
-  schedule.run()
+if (true !== options.testLeds) {
 
-}).catch((error) => {
+  var crawler = new iCalCrawler(url)
+  var schedule
 
-  console.error('Error fetching or parsing data')
-  console.error(error)
+  crawler.fetch().then((eventDates) => {
+    if (options.listEvents) {
+      _.forEach(eventDates, (eventDate, idx) => {
+        console.log(eventDate.toString())
+      })
 
-})
+      // abort if we don't have the --run option
+      if (options.run !== true) {
+        exitHandler({exit: true}, 1)
+        return
+      }
+    }
+
+    if (options.run !== true) {
+      console.log('Please start with --run to run it')
+      console.log(usage)
+      exitHandler({exit: true}, 1)
+      return
+    }
+
+    schedule = new Schedule(startDate, eventDates)
+    schedule.run()
+
+  }).catch((error) => {
+
+    console.error('Error fetching or parsing data')
+    console.error(error)
+
+  })
+}
 
 function exitHandler (options, exitCode) {
   if (options.cleanup) {
@@ -119,6 +144,11 @@ function exitHandler (options, exitCode) {
     if (_.isObject(schedule)) {
       schedule.isRunning = false
       schedule.unexportOnClose()
+    } else {
+      for (let i = 0, ii = ledList.length; i < ii; i++) {
+        ledList[i].led.writeSync(0)
+        ledList[i].led.unexport()
+      }
     }
   }
 }
@@ -139,9 +169,5 @@ process.on('SIGTERM', exitHandler.bind(null, {exit: true}))
 //catches uncaught exceptions
 process.on('uncaughtException', exitHandler.bind(null, {exit: true}))
 
-// while (schedule.isRunning) {
-//
-//   schedule.lightUp()
-// }
 
 
