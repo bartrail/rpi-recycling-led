@@ -7,8 +7,10 @@
     }
   },
   "interval" : {
-    "tomorrow" : 5000,
-    "today"    : 1000
+    "tomorrowOn"  : 60000,
+    "tomorrowOff" : 100,
+    "todayOn"     : 1000,
+    "todayOff"    : 250
   },
   "leds"     : [
     {

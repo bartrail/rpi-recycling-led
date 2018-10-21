@@ -59,24 +59,23 @@ class Schedule {
   run () {
     this.isRunning = true
 
-    let todayInterval    = config.get('interval').today
-    let tomorrowInterval = config.get('interval').tomorrow
+    let interval = config.get('interval')
 
-    this.lightUpTodayList()
+    this.lightOnTodayList()
     this.today.intervalId = setInterval(() => {
       this.lightOffTodayList()
       this.today.timeoutId = setTimeout(() => {
-        this.lightUpTodayList()
-      }, todayInterval)
-    }, todayInterval * 2)
+        this.lightOnTodayList()
+      }, interval.todayOff)
+    }, interval.todayOn)
 
-    this.lightUpTomorrowList()
+    this.lightOnTomorrowList()
     this.tomorrow.intervalId = setInterval(() => {
       this.lightOffTomorrowList()
       this.tomorrow.timeoutId = setTimeout(() => {
-        this.lightUpTomorrowList()
-      }, tomorrowInterval)
-    }, tomorrowInterval * 2)
+        this.lightOnTomorrowList()
+      }, interval.tomorrowOff)
+    }, interval.tomorrowOn)
   }
 
   stop () {
@@ -110,7 +109,7 @@ class Schedule {
     })
   }
 
-  lightUpTodayList () {
+  lightOnTodayList () {
     if (false === this.isRunning) {
       return
     }
@@ -129,7 +128,7 @@ class Schedule {
     })
   }
 
-  lightUpTomorrowList () {
+  lightOnTomorrowList () {
     if (false === this.isRunning) {
       return
     }
