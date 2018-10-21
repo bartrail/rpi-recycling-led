@@ -97,8 +97,8 @@ class EventDate {
   toString () {
     return 'Summary: {summary}\nDates: [{startDate}] - [{endDate}]\nLocation: {location}\nDescription: {description}\n'.parse({
       summary    : this.summary,
-      startDate  : this.startDate,
-      endDate    : this.endDate,
+      startDate  : this.startDate.toISODate(),
+      endDate    : this.endDate.toISODate(),
       location   : this.location,
       description: this.description
     })
