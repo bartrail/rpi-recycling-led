@@ -104,14 +104,14 @@ for (let i = 0, ii = ledList.length; i < ii; i++) {
 
 }
 
-if (options.run !== true && options.simulate !== true) {
-  console.log('Please start with --run to run it or --simulate to simulate it :)')
-  console.log(usage)
-  exitHandler({exit: true}, 1)
-  return
-}
-
 if (true !== options.testLeds) {
+
+  if (options.run !== true && options.simulate !== true) {
+    console.log('Please start with --run to run it or --simulate to simulate it :)')
+    console.log(usage)
+    exitHandler({exit: true}, 1)
+    return
+  }
 
   var crawler = new iCalCrawler(url)
   var schedule
