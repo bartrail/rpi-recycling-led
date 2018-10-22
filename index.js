@@ -7,15 +7,17 @@
  * Time: 16:10
  */
 
-const commandLineArgs  = require('command-line-args')
-const commandLineUsage = require('command-line-usage')
-const _                = require('lodash')
-const config           = require('config')
-const {DateTime}       = require('luxon')
-const Gpio             = require('onoff').Gpio
+const commandLineArgs      = require('command-line-args')
+const commandLineUsage     = require('command-line-usage')
+const _                    = require('lodash')
+const config               = require('config')
+const {DateTime, Settings} = require('luxon')
+const Gpio                 = require('onoff').Gpio
 
 const iCalCrawler = require('./components/eventDate/iCalCrawler.js')
 const Schedule    = require('./components/eventDate/Schedule.js')
+
+Settings.defaultLocale = config.locale
 
 let url     = config.get('iCalURL')
 let ledList = config.get('leds')
@@ -114,29 +116,39 @@ if (true !== options.testLeds) {
   var crawler = new iCalCrawler(url)
   var schedule
 
-  crawler.fetch().then((eventDates) => {
+  var run = function () {
+    crawler.fetch().then((eventDates) => {
 
-    if (options.listEvents) {
-      _.forEach(eventDates, (eventDate, idx) => {
-        console.log(eventDate.toString())
-      })
+      if (options.listEvents) {
+        _.forEach(eventDates, (eventDate, idx) => {
+          console.log(eventDate.toString())
+        })
 
-      // abort if we don't have the --run option
-      if (options.run !== true) {
-        exitHandler({exit: true}, 1)
-        return
+        // abort if we don't have the --run option
+        if (options.run !== true) {
+          exitHandler({exit: true}, 1)
+          return
+        }
       }
-    }
 
-    schedule = new Schedule(startDate, eventDates, options)
-    schedule.run()
+      schedule = new Schedule(startDate, eventDates, options)
+      schedule.run()
 
-  }).catch((error) => {
+    }).catch((error) => {
 
-    console.error('Error fetching or parsing data')
-    console.error(error)
+      console.error('Error fetching or parsing data')
+      console.error(error)
 
-  })
+    })
+  }
+
+  run()
+
+  setInterval(() => {
+
+    run()
+
+  }, config.interval.eventListUpdate)
 }
 
 function exitHandler (options, exitCode) {

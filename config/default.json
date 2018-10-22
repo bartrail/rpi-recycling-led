@@ -1,5 +1,6 @@
 {
   "iCalURL"  : "http://neuss.mein-abfallkalender.de/ical.ics?sid=25167&cd=inline&ft=12&fp=next_1000&wids=645,646,647,648,649,650",
+  "locale"   : "de",
   "status"   : {
     "error" : {
       "gpio" : 12
@@ -7,10 +8,11 @@
     }
   },
   "interval" : {
-    "tomorrowOn"  : 60000,
-    "tomorrowOff" : 100,
-    "todayOn"     : 1000,
-    "todayOff"    : 250
+    "eventListUpdate" : 86400000, // daily
+    "tomorrowOn"      : 60000,
+    "tomorrowOff"     : 100,
+    "todayOn"         : 1000,
+    "todayOff"        : 250
   },
   "leds"     : [
     {

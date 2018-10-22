@@ -47,12 +47,13 @@ class Schedule {
       }
 
       console.log('Simulating [%s] days from [%s] to [%s]', this.demoDateList.length, firstDate.toISODate(), lastDate.toISODate())
+      console.log(' ');
 
       this.init(firstDate)
 
       this.dateUpdateIntervalId = setInterval(() => {
-        this.updateDate()
         this.demoDateIndex++
+        this.updateDate()
       }, 10000)
 
     } else {
@@ -117,31 +118,7 @@ class Schedule {
   run () {
     this.isRunning = true
 
-    let today    = '{y}-{m}-{d}'.parse({
-      y: this.todayDate.year,
-      m: this.todayDate.month,
-      d: this.todayDate.day
-    })
-    let tomorrow = '{y}-{m}-{d}'.parse({
-      y: this.tomorrowDate.year,
-      m: this.tomorrowDate.month,
-      d: this.tomorrowDate.day
-    })
-
-    var t = new Table
-
-    let todayOutput    = [{today: today}]
-    let tomorrowOutput = [{tomorrow: tomorrow}]
-    _.forEach(this.todayList, (eventDate) => {
-      todayOutput.push({today: 'Color: [{c}] // GPIO [{g}]'.parse({c: eventDate.led.color, g: eventDate.led.gpio})})
-    })
-    _.forEach(this.tomorrowList, (eventDate) => {
-      tomorrowOutput.push({today: 'Color: [{c}] // GPIO [{g}]'.parse({c: eventDate.led.color, g: eventDate.led.gpio})})
-    })
-    let mergedOutput = _.merge(todayOutput, tomorrowOutput)
-
-    console.log(mergedOutput)
-    console.log(' ')
+    console.log(this.toString());
 
     let interval = config.get('interval')
     this.lightOnTodayList()
@@ -226,6 +203,51 @@ class Schedule {
     })
   }
 
+  toString () {
+    let today    = '{y}-{m}-{d}'.parse({
+      y: this.todayDate.year,
+      m: this.todayDate.month,
+      d: this.todayDate.day
+    })
+    let tomorrow = '{y}-{m}-{d}'.parse({
+      y: this.tomorrowDate.year,
+      m: this.tomorrowDate.month,
+      d: this.tomorrowDate.day
+    })
+
+    let todayOutput    = []
+    let tomorrowOutput = []
+    if (this.todayList.length > 0) {
+      _.forEach(this.todayList, (eventDate) => {
+        todayOutput.push({today: 'Color: [{c}] // GPIO [{g}]'.parse({c: eventDate.led.color, g: eventDate.led.gpio})})
+      })
+    } else {
+      todayOutput.push({today: 'empty'})
+    }
+
+    if (this.tomorrowList.length > 0) {
+      _.forEach(this.tomorrowList, (eventDate) => {
+        tomorrowOutput.push({
+          tomorrow: 'Color: [{c}] // GPIO [{g}]'.parse({
+            c: eventDate.led.color,
+            g: eventDate.led.gpio
+          })
+        })
+      })
+    } else {
+      tomorrowOutput.push({tomorrow: 'empty'})
+    }
+    let mergedOutput = _.merge(todayOutput, tomorrowOutput)
+
+    var t = new Table()
+    _.forEach(mergedOutput, (output) => {
+      t.cell('Today [{d}]'.parse({d: today}), output.today)
+      t.cell('Tomorrow [{d}]'.parse({d: tomorrow}), output.tomorrow)
+      t.newRow()
+    })
+
+    return t.toString()
+  }
 }
 
 module.exports = Schedule

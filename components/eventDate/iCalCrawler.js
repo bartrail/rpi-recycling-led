@@ -7,9 +7,10 @@
  * Time: 16:56
  */
 
-var _      = require('lodash')
-const rp   = require('request-promise')
-const ICAL = require('ical.js')
+var _            = require('lodash')
+const rp         = require('request-promise')
+const {DateTime} = require('luxon')
+const ICAL       = require('ical.js')
 
 const EventDate = require('./EventDate.js')
 
@@ -21,6 +22,11 @@ class iCalCrawler {
   }
 
   fetch () {
+
+    console.log('[%s] Fetching Events from', DateTime.local().toLocaleString(DateTime.DATETIME_SHORT))
+    console.log(this.uri)
+    console.log(' ')
+
     return new Promise((resolve, reject) => {
       rp({
         uri                    : this.uri,
