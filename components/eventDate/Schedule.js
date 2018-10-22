@@ -10,7 +10,7 @@
 const _          = require('lodash')
 const {DateTime} = require('luxon')
 const config     = require('config')
-const cTable     = require('console.table')
+var Table        = require('easy-table')
 
 class Schedule {
 
@@ -128,6 +128,8 @@ class Schedule {
       d: this.tomorrowDate.day
     })
 
+    var t = new Table
+
     let todayOutput    = [{today: today}]
     let tomorrowOutput = [{tomorrow: tomorrow}]
     _.forEach(this.todayList, (eventDate) => {
@@ -138,7 +140,7 @@ class Schedule {
     })
     let mergedOutput = _.merge(todayOutput, tomorrowOutput)
 
-    console.table(mergedOutput)
+    console.log(mergedOutput)
     console.log(' ')
 
     let interval = config.get('interval')
