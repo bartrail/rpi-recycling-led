@@ -10,6 +10,7 @@
 const _          = require('lodash')
 const {DateTime} = require('luxon')
 const config     = require('config')
+const cTable     = require('console.table')
 
 class Schedule {
 
@@ -17,8 +18,9 @@ class Schedule {
    *
    * @param {DateTime} startDate
    * @param {EventDate[]} eventDates
+   * @param {Object} options
    */
-  constructor (startDate, eventDates) {
+  constructor (startDate, eventDates, options) {
     /**
      * @type {EventDate[]}
      */
@@ -29,85 +31,39 @@ class Schedule {
       }
     })
 
-    this.init(startDate)
+    this.options       = options
+    this.demoDateIndex = 0
+    this.demoDateList  = []
 
-    this.dateIndex = 0
+    if (this.options.simulate) {
 
-    this.dateList = [
-      {year: 2018, month: 10, day: 25},
-      {year: 2018, month: 10, day: 26},
-      {year: 2018, month: 10, day: 27},
-      {year: 2018, month: 10, day: 28},
-      {year: 2018, month: 10, day: 29},
-      {year: 2018, month: 10, day: 30},
-      {year: 2018, month: 10, day: 31},
-      {year: 2018, month: 11, day: 1},
-      {year: 2018, month: 11, day: 2},
-      {year: 2018, month: 11, day: 3},
-      {year: 2018, month: 11, day: 4},
-      {year: 2018, month: 11, day: 5},
-      {year: 2018, month: 11, day: 6},
-      {year: 2018, month: 11, day: 7},
-      {year: 2018, month: 11, day: 8},
-      {year: 2018, month: 11, day: 9},
-      {year: 2018, month: 11, day: 10},
-      {year: 2018, month: 11, day: 11},
-      {year: 2018, month: 11, day: 12},
-      {year: 2018, month: 11, day: 13},
-      {year: 2018, month: 11, day: 14},
-      {year: 2018, month: 11, day: 15},
-      {year: 2018, month: 11, day: 16},
-      {year: 2018, month: 11, day: 17},
-      {year: 2018, month: 11, day: 18},
-      {year: 2018, month: 11, day: 19},
-      {year: 2018, month: 11, day: 20},
-      {year: 2018, month: 11, day: 21},
-      {year: 2018, month: 11, day: 22},
-      {year: 2018, month: 11, day: 23},
-      {year: 2018, month: 11, day: 24},
-      {year: 2018, month: 11, day: 25},
-      {year: 2018, month: 11, day: 26},
-      {year: 2018, month: 11, day: 27},
-      {year: 2018, month: 11, day: 28},
-      {year: 2018, month: 11, day: 29},
-      {year: 2018, month: 11, day: 30},
-      {year: 2018, month: 12, day: 1},
-      {year: 2018, month: 12, day: 2},
-      {year: 2018, month: 12, day: 3},
-      {year: 2018, month: 12, day: 4},
-      {year: 2018, month: 12, day: 5},
-      {year: 2018, month: 12, day: 6},
-      {year: 2018, month: 12, day: 7},
-      {year: 2018, month: 12, day: 8},
-      {year: 2018, month: 12, day: 9},
-      {year: 2018, month: 12, day: 10},
-      {year: 2018, month: 12, day: 11},
-      {year: 2018, month: 12, day: 12},
-      {year: 2018, month: 12, day: 13},
-      {year: 2018, month: 12, day: 14},
-      {year: 2018, month: 12, day: 15},
-      {year: 2018, month: 12, day: 16},
-      {year: 2018, month: 12, day: 17},
-      {year: 2018, month: 12, day: 18},
-      {year: 2018, month: 12, day: 19},
-      {year: 2018, month: 12, day: 20},
-      {year: 2018, month: 12, day: 21},
-      {year: 2018, month: 12, day: 22},
-      {year: 2018, month: 12, day: 23},
-      {year: 2018, month: 12, day: 24},
-      {year: 2018, month: 12, day: 25},
-      {year: 2018, month: 12, day: 26},
-      {year: 2018, month: 12, day: 27},
-      {year: 2018, month: 12, day: 28},
-      {year: 2018, month: 12, day: 29},
-    ]
+      const firstDate = this.eventDates[0].startDate
+      const lastDate  = this.eventDates[this.eventDates.length - 1].startDate
 
-    this.dateUpdateIntervalId = setInterval(() => {
-      this.updateDate()
-      this.dateIndex++
-    }, 10000)
+      let currentDate = firstDate
+      while (currentDate <= lastDate) {
+        this.demoDateList.push(currentDate)
+        currentDate = currentDate.plus({days: 1})
+      }
+
+      console.log('Simulating [%s] days from [%s] to [%s]', this.demoDateList.length, firstDate.toISODate(), lastDate.toISODate())
+
+      this.init(firstDate)
+
+      this.dateUpdateIntervalId = setInterval(() => {
+        this.updateDate()
+        this.demoDateIndex++
+      }, 10000)
+
+    } else {
+      this.init(startDate)
+    }
+
   }
 
+  /**
+   * @param {DateTime} startDate
+   */
   init (startDate) {
     this.todayDate    = startDate
     this.tomorrowDate = this.todayDate.plus({days: 1})
@@ -145,25 +101,47 @@ class Schedule {
   }
 
   updateDate () {
+    let todayDate
+    if (this.options.simulate) {
+      todayDate = this.demoDateList[this.demoDateIndex]
+    } else {
+      todayDate = this.todayDate
+    }
+
     this.lightOffTodayList()
     this.lightOffTomorrowList()
-    this.init(
-      DateTime.local(
-        this.dateList[this.dateIndex].year,
-        this.dateList[this.dateIndex].month,
-        this.dateList[this.dateIndex].day
-      )
-    )
-    console.log('%s.%s.%s', this.todayDate.year, this.todayDate.month, this.todayDate.day)
+    this.init(todayDate)
     this.run()
-
   }
 
   run () {
     this.isRunning = true
 
-    let interval = config.get('interval')
+    let today    = '{y}-{m}-{d}'.parse({
+      y: this.todayDate.year,
+      m: this.todayDate.month,
+      d: this.todayDate.day
+    })
+    let tomorrow = '{y}-{m}-{d}'.parse({
+      y: this.tomorrowDate.year,
+      m: this.tomorrowDate.month,
+      d: this.tomorrowDate.day
+    })
 
+    let todayOutput    = [{today: today}]
+    let tomorrowOutput = [{tomorrow: tomorrow}]
+    _.forEach(this.todayList, (eventDate) => {
+      todayOutput.push({today: 'Color: [{c}] // GPIO [{g}]'.parse({c: eventDate.led.color, g: eventDate.led.gpio})})
+    })
+    _.forEach(this.tomorrowList, (eventDate) => {
+      tomorrowOutput.push({today: 'Color: [{c}] // GPIO [{g}]'.parse({c: eventDate.led.color, g: eventDate.led.gpio})})
+    })
+    let mergedOutput = _.merge(todayOutput, tomorrowOutput)
+
+    console.table(mergedOutput)
+    console.log(' ')
+
+    let interval = config.get('interval')
     this.lightOnTodayList()
     this.today.intervalId = setInterval(() => {
       this.lightOffTodayList()

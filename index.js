@@ -49,6 +49,10 @@ const sections = [
         description: 'Test if all LEDs are working'
       },
       {
+        name       : 'simulate',
+        description: 'Runs through all dates found in the EventList and simulates every date with a delay of 10 seconds'
+      },
+      {
         name       : 'verbose',
         // typeLabel  : '{underline file}',
         description: 'Verbose output'
@@ -67,6 +71,7 @@ const optionDefinitions = [
   {name: 'run', type: Boolean, default: true},
   {name: 'listEvents', type: Boolean, default: false},
   {name: 'testLeds', type: Boolean, default: false},
+  {name: 'simulate', type: Boolean, default: false},
   {name: 'date', type: String, defaultValue: DateTime.local().toFormat('y-LL-d')},
   {name: 'verbose', alias: 'v', type: Boolean},
   {name: 'help', alias: 'h', type: Boolean, default: false},
@@ -115,14 +120,14 @@ if (true !== options.testLeds) {
       }
     }
 
-    if (options.run !== true) {
-      console.log('Please start with --run to run it')
+    if (options.run !== true && options.simulate !== true) {
+      console.log('Please start with --run to run it or --simulate to simulate it :)')
       console.log(usage)
       exitHandler({exit: true}, 1)
       return
     }
 
-    schedule = new Schedule(startDate, eventDates)
+    schedule = new Schedule(startDate, eventDates, options)
     schedule.run()
 
   }).catch((error) => {
