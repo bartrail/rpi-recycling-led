@@ -8,7 +8,8 @@
     }
   },
   "interval" : {
-    "eventListUpdate" : 86400000, // daily
+    "eventListUpdate" : 86400000,
+    // daily
     "tomorrowOn"      : 60000,
     "tomorrowOff"     : 100,
     "todayOn"         : 1000,
@@ -19,7 +20,7 @@
       // Paper
       "summary" : "Papiertonne",
       "color"   : "Blue",
-      "gpio"    : 13
+      "gpio"    : 5
     },
     {
       // Recycling

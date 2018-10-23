@@ -37,10 +37,10 @@ class Schedule {
 
     if (this.options.simulate) {
 
-      const firstDate = this.eventDates[0].startDate
+      const firstDate = this.eventDates[0].startDate.minus({days: 2})
       const lastDate  = this.eventDates[this.eventDates.length - 1].startDate
 
-      let currentDate = firstDate
+      let currentDate = firstDate;
       while (currentDate <= lastDate) {
         this.demoDateList.push(currentDate)
         currentDate = currentDate.plus({days: 1})
@@ -66,6 +66,10 @@ class Schedule {
    * @param {DateTime} startDate
    */
   init (startDate) {
+    if(false === startDate instanceof DateTime) {
+      console.log('Invalid Date given: [%o]', startDate);
+      return;
+    }
     this.todayDate    = startDate
     this.tomorrowDate = this.todayDate.plus({days: 1})
 
