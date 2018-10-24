@@ -20,13 +20,13 @@
       // Paper
       "summary" : "Papiertonne",
       "color"   : "Blue",
-      "gpio"    : 5
+      "gpio"    : 12
     },
     {
       // Recycling
       "summary" : "Gelbe Tonne / Gelber Sack",
       "color"   : "Yellow",
-      "gpio"    : 20
+      "gpio"    : 10
     },
     {
       // Noxious Substances
@@ -38,13 +38,13 @@
       // Bio-Waste / Organic
       "summary" : "Biotonne",
       "color"   : "Green",
-      "gpio"    : 12
+      "gpio"    : 13
     },
     {
       // Residual Waste
       "summary" : "Restmüll-Grau",
       "color"   : "Gray",
-      "gpio"    : 16
+      "gpio"    : 8
     }
   ]
 }

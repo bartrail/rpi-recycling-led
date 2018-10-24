@@ -53,11 +53,18 @@ class Schedule {
 
       this.dateUpdateIntervalId = setInterval(() => {
         this.demoDateIndex++
-        this.updateDate()
+        this.updateDate(this.demoDateList[this.demoDateIndex])
       }, 10000)
 
     } else {
       this.init(startDate)
+
+      setInterval(() => {
+        let now = DateTime.local();
+        if(now > this.todayDate) {
+          this.updateDate(now);
+        }
+      }, 60000);
     }
 
   }
@@ -105,14 +112,7 @@ class Schedule {
     this.groupEventDates()
   }
 
-  updateDate () {
-    let todayDate
-    if (this.options.simulate) {
-      todayDate = this.demoDateList[this.demoDateIndex]
-    } else {
-      todayDate = this.todayDate
-    }
-
+  updateDate (todayDate) {
     this.lightOffTodayList()
     this.lightOffTomorrowList()
     this.init(todayDate)
