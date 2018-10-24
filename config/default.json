@@ -8,6 +8,7 @@
     }
   },
   "interval" : {
+    "retryFetchURL"   : 15000,
     "eventListUpdate" : 86400000,
     // daily
     "tomorrowOn"      : 60000,

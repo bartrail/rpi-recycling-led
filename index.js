@@ -136,14 +136,14 @@ if (true !== options.testLeds) {
 
     }).catch((error) => {
 
-      console.error('Error fetching or parsing data')
+      console.error('Error fetching or parsing data. Trying again in [%s] seconds', _.round(config.interval.retryFetchURL/1000))
       if (options.verbose) {
         console.error(error)
       }
 
       setTimeout(() => {
         run();
-      }, 150000)
+      }, config.interval.retryFetchURL)
 
     })
   }
