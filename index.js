@@ -137,7 +137,13 @@ if (true !== options.testLeds) {
     }).catch((error) => {
 
       console.error('Error fetching or parsing data')
-      console.error(error)
+      if (options.verbose) {
+        console.error(error)
+      }
+
+      setTimeout(() => {
+        run();
+      }, 150000)
 
     })
   }

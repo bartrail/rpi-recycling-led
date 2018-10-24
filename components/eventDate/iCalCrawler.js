@@ -42,7 +42,6 @@ class iCalCrawler {
         }
 
       }).catch((error) => {
-
         console.error('ERROR: Unable to fetch from Server')
         reject(error)
       })
