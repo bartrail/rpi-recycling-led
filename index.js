@@ -74,7 +74,7 @@ const optionDefinitions = [
   {name: 'listEvents', type: Boolean, default: false},
   {name: 'testLeds', type: Boolean, default: false},
   {name: 'simulate', type: Boolean, default: false},
-  {name: 'date', type: String, defaultValue: DateTime.local().toFormat('y-LL-d')},
+  {name: 'date', type: String, defaultValue: DateTime.local().toFormat('y-LL-dd')},
   {name: 'verbose', alias: 'v', type: Boolean},
   {name: 'help', alias: 'h', type: Boolean, default: false},
 ]
@@ -136,13 +136,13 @@ if (true !== options.testLeds) {
 
     }).catch((error) => {
 
-      console.error('Error fetching or parsing data. Trying again in [%s] seconds', _.round(config.interval.retryFetchURL/1000))
+      console.error('Error fetching or parsing data. Trying again in [%s] seconds', _.round(config.interval.retryFetchURL / 1000))
       if (options.verbose) {
         console.error(error)
       }
 
       setTimeout(() => {
-        run();
+        run()
       }, config.interval.retryFetchURL)
 
     })
@@ -170,8 +170,10 @@ function exitHandler (options, exitCode) {
       schedule.unexportOnClose()
     } else {
       for (let i = 0, ii = ledList.length; i < ii; i++) {
-        ledList[i].led.writeSync(0)
-        ledList[i].led.unexport()
+        if (_.isObject(ledList[i].led)) {
+          ledList[i].led.writeSync(0)
+          ledList[i].led.unexport()
+        }
       }
     }
   }
