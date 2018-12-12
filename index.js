@@ -131,6 +131,9 @@ if (true !== options.testLeds) {
         }
       }
 
+      if(typeof(schedule) === 'object') {
+        schedule.stop();
+      }
       schedule = new Schedule(startDate, eventDates, options)
       schedule.run()
 

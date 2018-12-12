@@ -3,14 +3,14 @@
   "locale"   : "de",
   "status"   : {
     "error" : {
-      "gpio" : 12
       // if error occured, this gpio will blink
+      "gpio" : 12
     }
   },
   "interval" : {
     "retryFetchURL"   : 15000,
-    "eventListUpdate" : 86400000,
     // daily
+    "eventListUpdate" : 86400000,
     "tomorrowOn"      : 60000,
     "tomorrowOff"     : 100,
     "todayOn"         : 1000,

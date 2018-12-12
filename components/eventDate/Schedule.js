@@ -40,14 +40,14 @@ class Schedule {
       const firstDate = this.eventDates[0].startDate.minus({days: 2})
       const lastDate  = this.eventDates[this.eventDates.length - 1].startDate
 
-      let currentDate = firstDate;
+      let currentDate = firstDate
       while (currentDate <= lastDate) {
         this.demoDateList.push(currentDate)
         currentDate = currentDate.plus({days: 1})
       }
 
       console.log('Simulating [%s] days from [%s] to [%s]', this.demoDateList.length, firstDate.toISODate(), lastDate.toISODate())
-      console.log(' ');
+      console.log(' ')
 
       this.init(firstDate)
 
@@ -60,11 +60,11 @@ class Schedule {
       this.init(startDate)
 
       setInterval(() => {
-        let now = DateTime.local();
-        if(now > this.todayDate) {
-          this.updateDate(now);
+        let now = DateTime.local()
+        if (now > this.todayDate) {
+          this.updateDate(now)
         }
-      }, 60000);
+      }, 60000)
     }
 
   }
@@ -73,9 +73,9 @@ class Schedule {
    * @param {DateTime} startDate
    */
   init (startDate) {
-    if(false === startDate instanceof DateTime) {
-      console.log('Invalid Date given: [%o]', startDate);
-      return;
+    if (false === startDate instanceof DateTime) {
+      console.log('Invalid Date given: [%o]', startDate)
+      return
     }
     this.todayDate    = startDate
     this.tomorrowDate = this.todayDate.plus({days: 1})
@@ -122,7 +122,7 @@ class Schedule {
   run () {
     this.isRunning = true
 
-    console.log(this.toString());
+    console.log(this.toString())
 
     let interval = config.get('interval')
     this.lightOnTodayList()
