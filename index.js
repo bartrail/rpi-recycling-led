@@ -74,12 +74,15 @@ const optionDefinitions = [
   {name: 'listEvents', type: Boolean, default: false},
   {name: 'testLeds', type: Boolean, default: false},
   {name: 'simulate', type: Boolean, default: false},
-  {name: 'date', type: String, defaultValue: DateTime.local().toFormat('y-LL-dd')},
+  {name: 'date', type: String, defaultValue: DateTime.local().toFormat('yyyy-LL-dd')},
   {name: 'verbose', alias: 'v', type: Boolean},
-  {name: 'help', alias: 'h', type: Boolean, default: false},
+  {name: 'help', alias: 'h', type: Boolean, default: false}
 ]
 
-const options = commandLineArgs(optionDefinitions)
+const options = commandLineArgs(optionDefinitions, {
+  partial           : true,
+  stopAtFirstUnknown: false
+})
 
 let startDate = DateTime.fromISO(options.date)
 
@@ -96,7 +99,14 @@ for (let i = 0, ii = ledList.length; i < ii; i++) {
   }
 
   if (Gpio.accessible) {
-    ledList[i].led = new Gpio(ledList[i].gpio, 'out')
+    ledList[i].led   = new Gpio(ledList[i].gpio, 'out')
+    ledList[i].blink = function () {
+      ledList[i].led.writeSync(1)
+      ledList[i].blinkTimeoutId = setTimeout(() => {
+        ledList[i].led.writeSync(0)
+        clearTimeout(ledList[i].led.blinkTimeoutId)
+      }, 250)
+    }
     if (options.testLeds) {
       ledList[i].led.writeSync(1)
     }
@@ -131,8 +141,8 @@ if (true !== options.testLeds) {
         }
       }
 
-      if(typeof(schedule) === 'object') {
-        schedule.stop();
+      if (typeof (schedule) === 'object') {
+        schedule.stop()
       }
       schedule = new Schedule(startDate, eventDates, options)
       schedule.run()
@@ -140,6 +150,11 @@ if (true !== options.testLeds) {
     }).catch((error) => {
 
       console.error('Error fetching or parsing data. Trying again in [%s] seconds', _.round(config.interval.retryFetchURL / 1000))
+
+      for (let i = 0, ii = ledList.length; i < ii; i++) {
+        ledList[i].blink()
+      }
+
       if (options.verbose) {
         console.error(error)
       }

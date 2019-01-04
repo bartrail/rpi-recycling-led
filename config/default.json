@@ -8,13 +8,13 @@
     }
   },
   "interval" : {
-    "retryFetchURL"   : 15000,
+    "retryFetchURL"   : 300000,
     // daily
     "eventListUpdate" : 86400000,
     "tomorrowOn"      : 60000,
     "tomorrowOff"     : 100,
-    "todayOn"         : 1000,
-    "todayOff"        : 250
+    "todayOn"         : 2000,
+    "todayOff"        : 1000
   },
   "leds"     : [
     {

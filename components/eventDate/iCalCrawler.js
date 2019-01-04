@@ -23,7 +23,7 @@ class iCalCrawler {
 
   fetch () {
 
-    console.log('[%s] Fetching Events from', DateTime.local().toLocaleString(DateTime.DATETIME_SHORT))
+    console.log('[%s] Fetching Events from', DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss'))
     console.log(this.uri)
     console.log(' ')
 

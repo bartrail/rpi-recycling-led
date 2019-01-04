@@ -59,7 +59,7 @@ class Schedule {
     } else {
       this.init(startDate)
 
-      setInterval(() => {
+      this.dateUpdateIntervalId = setInterval(() => {
         let now = DateTime.local()
         if (now > this.todayDate) {
           this.updateDate(now)
@@ -93,10 +93,7 @@ class Schedule {
     this.isRunning = false
 
     try {
-      clearInterval(this.today.intervalId)
-      clearInterval(this.tomorrow.intervalId)
-      clearTimeout(this.today.timeoutId)
-      clearTimeout(this.tomorrow.timeoutId)
+      this.stop()
     } catch (e) {}
 
     this.today = {
@@ -145,8 +142,10 @@ class Schedule {
   stop () {
     this.isRunning = false
 
-    clearInterval(this.today.intervalId)
     clearTimeout(this.today.timeoutId)
+    clearTimeout(this.tomorrow.timeoutId)
+    clearInterval(this.today.intervalId)
+    clearInterval(this.tomorrow.intervalId)
   }
 
   groupEventDates () {
@@ -208,16 +207,19 @@ class Schedule {
   }
 
   toString () {
-    let today    = '{y}-{m}-{d}'.parse({
-      y: this.todayDate.year,
-      m: this.todayDate.month,
-      d: this.todayDate.day
-    })
-    let tomorrow = '{y}-{m}-{d}'.parse({
-      y: this.tomorrowDate.year,
-      m: this.tomorrowDate.month,
-      d: this.tomorrowDate.day
-    })
+    // let today    = '{y}-{m}-{d}'.parse({
+    //   y: this.todayDate.year,
+    //   m: this.todayDate.month,
+    //   d: this.todayDate.day
+    // })
+    // let tomorrow = '{y}-{m}-{d}'.parse({
+    //   y: this.tomorrowDate.year,
+    //   m: this.tomorrowDate.month,
+    //   d: this.tomorrowDate.day
+    // })
+
+    let today    = this.todayDate.toFormat('yyyy-LL-dd')
+    let tomorrow = this.tomorrowDate.toFormat('yyyy-LL-dd')
 
     let todayOutput    = []
     let tomorrowOutput = []
