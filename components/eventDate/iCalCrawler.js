@@ -7,17 +7,18 @@
  * Time: 16:56
  */
 
-var _            = require('lodash')
-const rp         = require('request-promise')
-const ICAL       = require('ical.js')
+var _      = require('lodash')
+const rp   = require('request-promise')
+const ICAL = require('ical.js')
 
 const EventDate = require('./EventDate.js')
 
 class iCalCrawler {
 
-  constructor (uri) {
+  constructor (uri, options) {
     this.uri        = uri
     this.rawContent = ''
+    this.options    = options
   }
 
   fetch () {
@@ -26,19 +27,21 @@ class iCalCrawler {
     console.log(this.uri)
     console.log(' ')
 
-    var time = 0;
-    var fetchInterval = 5000;
+    var time            = 0
+    var fetchInterval   = 5000
     var fetchIntervalId = setInterval(() => {
-      time++;
-      console.log('waiting %o seconds...', (time * fetchInterval / 1000));
-    }, fetchInterval);
+      time++
+      if (this.options.verbose) {
+        console.log('waiting %o seconds...', (time * fetchInterval / 1000))
+      }
+    }, fetchInterval)
 
     return new Promise((resolve, reject) => {
       rp({
         uri                    : this.uri,
         resolveWithFullResponse: true
       }).then((response) => {
-        clearInterval(fetchIntervalId);
+        clearInterval(fetchIntervalId)
         if (response.statusCode >= 200 && response.statusCode <= 300) {
           this.rawContent = response.body
           let eventDates  = this.parse()
@@ -48,7 +51,7 @@ class iCalCrawler {
         }
 
       }).catch((error) => {
-        clearInterval(fetchIntervalId);
+        clearInterval(fetchIntervalId)
         console.log('ERROR: Unable to fetch from Server')
         reject(error)
       })

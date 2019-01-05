@@ -124,7 +124,7 @@ if (true !== options.testLeds) {
     return
   }
 
-  var crawler = new iCalCrawler(url)
+  var crawler = new iCalCrawler(url, options)
   var schedule
 
   var run = function () {
