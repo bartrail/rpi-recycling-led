@@ -11,6 +11,9 @@ var _      = require('lodash')
 const rp   = require('request-promise')
 const ICAL = require('ical.js')
 
+const config = require('config')
+let ledList  = config.get('leds')
+
 const EventDate = require('./EventDate.js')
 
 class iCalCrawler {
@@ -36,12 +39,28 @@ class iCalCrawler {
       }
     }, fetchInterval)
 
+    if (config.showLoading) {
+      let i           = 0
+      const blinkNext = function () {
+        if (_.isNull(fetchIntervalId)) {
+          return
+        }
+        let led = ledList[i]
+        led.blink().then(() => {
+          i = i < ledList.length - 1 ? i + 1 : 0
+          blinkNext()
+        })
+      }
+      blinkNext()
+    }
+
     return new Promise((resolve, reject) => {
       rp({
         uri                    : this.uri,
         resolveWithFullResponse: true
       }).then((response) => {
-        clearInterval(fetchIntervalId)
+        clearInterval(fetchIntervalId);
+        fetchIntervalId = null;
         if (response.statusCode >= 200 && response.statusCode <= 300) {
           this.rawContent = response.body
           let eventDates  = this.parse()
@@ -52,6 +71,7 @@ class iCalCrawler {
 
       }).catch((error) => {
         clearInterval(fetchIntervalId)
+        fetchIntervalId = null;
         console.log('ERROR: Unable to fetch from Server')
         reject(error)
       })

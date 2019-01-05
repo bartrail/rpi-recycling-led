@@ -1,39 +1,29 @@
 {
-  "iCalURL"  : "http://neuss.mein-abfallkalender.de/ical.ics?sid=25167&cd=inline&ft=12&fp=next_1000&wids=645,646,647,648,649,650",
-  "locale"   : "de",
-  "status"   : {
+  "iCalURL"     : "http://neuss.mein-abfallkalender.de/ical.ics?sid=25167&cd=inline&ft=12&fp=next_1000&wids=645,646,647,648,649,650",
+  "locale"      : "de",
+  "status"      : {
     "error" : {
       // if error occured, this gpio will blink
       "gpio" : 12
     }
   },
-  "interval" : {
+  "interval"    : {
     "retryFetchURL"   : 300000,
     // daily
     "eventListUpdate" : 86400000,
     "tomorrowOn"      : 60000,
     "tomorrowOff"     : 100,
     "todayOn"         : 2000,
-    "todayOff"        : 1000
+    "todayOff"        : 1000,
+    "blink"           : 500
   },
-  "leds"     : [
+  "showLoading" : true,
+  "leds"        : [
     {
       // Paper
       "summary" : "Papiertonne",
       "color"   : "Blue",
       "gpio"    : 12
-    },
-    {
-      // Recycling
-      "summary" : "Gelbe Tonne / Gelber Sack",
-      "color"   : "Yellow",
-      "gpio"    : 10
-    },
-    {
-      // Noxious Substances
-      "summary" : "Schadstoffmobil",
-      "color"   : "Red",
-      "gpio"    : 21
     },
     {
       // Bio-Waste / Organic
@@ -46,6 +36,18 @@
       "summary" : "Restmüll-Grau",
       "color"   : "Gray",
       "gpio"    : 8
+    },
+    {
+      // Recycling
+      "summary" : "Gelbe Tonne / Gelber Sack",
+      "color"   : "Yellow",
+      "gpio"    : 10
+    },
+    {
+      // Noxious Substances
+      "summary" : "Schadstoffmobil",
+      "color"   : "Red",
+      "gpio"    : 21
     }
   ]
 }

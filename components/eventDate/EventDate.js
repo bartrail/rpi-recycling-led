@@ -13,7 +13,7 @@ const parse      = require('./../../util/string.parse.js')
 const config     = require('config')
 const Gpio       = require('onoff').Gpio
 
-let leds = config.get('leds')
+let ledList = config.get('leds')
 
 class EventDate {
 
@@ -57,7 +57,7 @@ class EventDate {
      */
     this.led = {}
 
-    _.forEach(leds, (led, idx) => {
+    _.forEach(ledList, (led, idx) => {
       if (led.summary === this.summary) {
         this.led = led
       }

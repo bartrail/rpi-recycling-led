@@ -13,7 +13,7 @@ const _                    = require('lodash')
 const config               = require('config')
 const {DateTime, Settings} = require('luxon')
 const Gpio                 = require('onoff').Gpio
-require('./util/console.js');
+require('./util/console.js')
 
 const iCalCrawler = require('./components/eventDate/iCalCrawler.js')
 const Schedule    = require('./components/eventDate/Schedule.js')
@@ -93,6 +93,7 @@ if (!startDate.isValid) {
   return
 }
 
+// initialize LEDs globally
 for (let i = 0, ii = ledList.length; i < ii; i++) {
 
   if (options.verbose) {
@@ -102,11 +103,20 @@ for (let i = 0, ii = ledList.length; i < ii; i++) {
   if (Gpio.accessible) {
     ledList[i].led   = new Gpio(ledList[i].gpio, 'out')
     ledList[i].blink = function () {
-      ledList[i].led.writeSync(1)
-      ledList[i].blinkTimeoutId = setTimeout(() => {
-        ledList[i].led.writeSync(0)
-        clearTimeout(ledList[i].led.blinkTimeoutId)
-      }, 250)
+      return new Promise((resolve, reject) => {
+        if(options.verbose) {
+          console.log("GPIO [%o] = 1", this.gpio);
+        }
+        ledList[i].led.writeSync(1)
+        ledList[i].blinkTimeoutId = setTimeout(() => {
+          ledList[i].led.writeSync(0)
+          clearTimeout(ledList[i].led.blinkTimeoutId)
+          if(options.verbose) {
+            console.log("GPIO [%o] = 0", this.gpio);
+          }
+          resolve()
+        }, config.interval.blink)
+      })
     }
     if (options.testLeds) {
       ledList[i].led.writeSync(1)
