@@ -140,6 +140,7 @@ class Schedule {
   }
 
   stop () {
+    console.log('stopping all intervals & timeouts');
     this.isRunning = false
 
     clearTimeout(this.today.timeoutId)

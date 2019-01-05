@@ -13,6 +13,7 @@ const _                    = require('lodash')
 const config               = require('config')
 const {DateTime, Settings} = require('luxon')
 const Gpio                 = require('onoff').Gpio
+require('./util/console.js');
 
 const iCalCrawler = require('./components/eventDate/iCalCrawler.js')
 const Schedule    = require('./components/eventDate/Schedule.js')
@@ -87,7 +88,7 @@ const options = commandLineArgs(optionDefinitions, {
 let startDate = DateTime.fromISO(options.date)
 
 if (!startDate.isValid) {
-  console.error('Invalid Date [%s]: %s', options.date, startDate.invalidReason)
+  console.log('Invalid Date [%s]: %s', options.date, startDate.invalidReason)
   exitHandler({exit: true}, 1)
   return
 }
@@ -149,14 +150,14 @@ if (true !== options.testLeds) {
 
     }).catch((error) => {
 
-      console.error('Error fetching or parsing data. Trying again in [%s] seconds', _.round(config.interval.retryFetchURL / 1000))
+      console.log('Error fetching or parsing data. Trying again in [%s] seconds', _.round(config.interval.retryFetchURL / 1000))
 
       for (let i = 0, ii = ledList.length; i < ii; i++) {
         ledList[i].blink()
       }
 
       if (options.verbose) {
-        console.error(error)
+        console.log(error)
       }
 
       setTimeout(() => {

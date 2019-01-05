@@ -9,7 +9,6 @@
 
 var _            = require('lodash')
 const rp         = require('request-promise')
-const {DateTime} = require('luxon')
 const ICAL       = require('ical.js')
 
 const EventDate = require('./EventDate.js')
@@ -23,16 +22,23 @@ class iCalCrawler {
 
   fetch () {
 
-    console.log('[%s] Fetching Events from', DateTime.local().toFormat('yyyy-LL-dd HH:mm:ss'))
+    console.log('Fetching Events from')
     console.log(this.uri)
     console.log(' ')
+
+    var time = 0;
+    var fetchInterval = 5000;
+    var fetchIntervalId = setInterval(() => {
+      time++;
+      console.log('waiting %o seconds...', (time * fetchInterval / 1000));
+    }, fetchInterval);
 
     return new Promise((resolve, reject) => {
       rp({
         uri                    : this.uri,
         resolveWithFullResponse: true
       }).then((response) => {
-
+        clearInterval(fetchIntervalId);
         if (response.statusCode >= 200 && response.statusCode <= 300) {
           this.rawContent = response.body
           let eventDates  = this.parse()
@@ -42,7 +48,8 @@ class iCalCrawler {
         }
 
       }).catch((error) => {
-        console.error('ERROR: Unable to fetch from Server')
+        clearInterval(fetchIntervalId);
+        console.log('ERROR: Unable to fetch from Server')
         reject(error)
       })
     })
@@ -63,8 +70,8 @@ class iCalCrawler {
       return eventDates
 
     } catch (e) {
-      console.error('ERROR: Unable to parse iCAL Data')
-      console.error(e)
+      console.log('ERROR: Unable to parse iCAL Data')
+      console.log(e)
     }
   }
 
