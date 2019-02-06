@@ -247,7 +247,6 @@ class Schedule {
     let mergedOutput = _.merge(todayOutput, tomorrowOutput)
 
     var t = new Table()
-    t.newRow();
     _.forEach(mergedOutput, (output) => {
       t.cell("\nToday [{d}]".parse({d: today}), output.today)
       t.cell('Tomorrow [{d}]'.parse({d: tomorrow}), output.tomorrow)
