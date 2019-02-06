@@ -104,15 +104,15 @@ for (let i = 0, ii = ledList.length; i < ii; i++) {
     ledList[i].led   = new Gpio(ledList[i].gpio, 'out')
     ledList[i].blink = function () {
       return new Promise((resolve, reject) => {
-        if(options.verbose) {
-          console.log("GPIO [%o] = 1", this.gpio);
+        if (options.verbose) {
+          console.log('GPIO [%o] = 1', this.gpio)
         }
         ledList[i].led.writeSync(1)
         ledList[i].blinkTimeoutId = setTimeout(() => {
           ledList[i].led.writeSync(0)
           clearTimeout(ledList[i].led.blinkTimeoutId)
-          if(options.verbose) {
-            console.log("GPIO [%o] = 0", this.gpio);
+          if (options.verbose) {
+            console.log('GPIO [%o] = 0', this.gpio)
           }
           resolve()
         }, config.interval.blink)
@@ -160,7 +160,10 @@ if (true !== options.testLeds) {
 
     }).catch((error) => {
 
-      console.log('Error fetching or parsing data. Trying again in [%s] seconds', _.round(config.interval.retryFetchURL / 1000))
+      if (error.isRunning) {
+        return
+      }
+      console.log('Error [%s] fetching or parsing data. Trying again in [%s] seconds', error.status, _.round(config.interval.retryFetchURL / 1000))
 
       for (let i = 0, ii = ledList.length; i < ii; i++) {
         ledList[i].blink()

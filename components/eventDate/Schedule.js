@@ -60,8 +60,8 @@ class Schedule {
       this.init(startDate)
 
       this.dateUpdateIntervalId = setInterval(() => {
-        let now = DateTime.local()
-        if (now > this.todayDate) {
+        let now = DateTime.local();
+        if (false === now.hasSame(this.todayDate, 'day')) {
           this.updateDate(now)
         }
       }, 60000)
@@ -247,8 +247,9 @@ class Schedule {
     let mergedOutput = _.merge(todayOutput, tomorrowOutput)
 
     var t = new Table()
+    t.newRow();
     _.forEach(mergedOutput, (output) => {
-      t.cell('Today [{d}]'.parse({d: today}), output.today)
+      t.cell("\nToday [{d}]".parse({d: today}), output.today)
       t.cell('Tomorrow [{d}]'.parse({d: tomorrow}), output.tomorrow)
       t.newRow()
     })

@@ -22,10 +22,17 @@ class iCalCrawler {
     this.uri        = uri
     this.rawContent = ''
     this.options    = options
+    this.isRunning  = false
   }
 
   fetch () {
 
+    if (this.isRunning) {
+      return new Promise((resolve, reject) => {
+        reject({isRunning: true})
+      })
+    }
+    this.isRunning = true
     console.log('Fetching Events from')
     console.log(this.uri)
     console.log(' ')
@@ -57,21 +64,25 @@ class iCalCrawler {
     return new Promise((resolve, reject) => {
       rp({
         uri                    : this.uri,
+        timeout                : config.timeout,
         resolveWithFullResponse: true
       }).then((response) => {
-        clearInterval(fetchIntervalId);
-        fetchIntervalId = null;
+        clearInterval(fetchIntervalId)
+        fetchIntervalId = null
+        this.isRunning  = false
         if (response.statusCode >= 200 && response.statusCode <= 300) {
           this.rawContent = response.body
           let eventDates  = this.parse()
           resolve(eventDates)
         } else {
+          this.isRunning = false
           reject(response)
         }
 
       }).catch((error) => {
+        this.isRunning = false
         clearInterval(fetchIntervalId)
-        fetchIntervalId = null;
+        fetchIntervalId = null
         console.log('ERROR: Unable to fetch from Server')
         reject(error)
       })
