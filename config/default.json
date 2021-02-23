@@ -1,5 +1,5 @@
 {
-  "iCalURL"     : "http://www.neuss.mein-abfallkalender.de/ical.ics?sid=25167&cd=inline&ft=6&fp=next_1000&wids=645,646,647,648,649,650&uid=94091&pwid=6bc0537341&cid=93",
+  "iCalURL"     : "http://www.neuss.mein-abfallkalender.de/ical.ics?sid=25167&cd=inline&ft=6&fp=next_1000&wids=645,646,647,648,649,650&uid=USER_ID&pwid=PW_ID&cid=93",
   "timeout"     : 30000, // milliseconds
   "locale"      : "de",
   "status"      : {

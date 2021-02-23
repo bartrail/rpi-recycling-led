@@ -54,8 +54,7 @@ class iCalCrawler {
         }
         let led = ledList[i]
         led.blink().then(() => {
-          i++
-          i = i % ledList.length
+          i = i < ledList.length - 1 ? i + 1 : 0
           blinkNext()
         })
       }
