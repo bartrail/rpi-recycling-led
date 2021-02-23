@@ -7,43 +7,83 @@
  * Time: 16:56
  */
 
-var _            = require('lodash')
-const rp         = require('request-promise')
-const {DateTime} = require('luxon')
-const ICAL       = require('ical.js')
+var _      = require('lodash')
+const rp   = require('request-promise')
+const ICAL = require('ical.js')
+
+const config = require('config')
+let ledList  = config.get('leds')
 
 const EventDate = require('./EventDate.js')
 
 class iCalCrawler {
 
-  constructor (uri) {
+  constructor (uri, options) {
     this.uri        = uri
     this.rawContent = ''
+    this.options    = options
+    this.isRunning  = false
   }
 
   fetch () {
 
-    console.log('[%s] Fetching Events from', DateTime.local().toLocaleString(DateTime.DATETIME_SHORT))
+    if (this.isRunning) {
+      return new Promise((resolve, reject) => {
+        reject({isRunning: true})
+      })
+    }
+    this.isRunning = true
+    console.log('Fetching Events from')
     console.log(this.uri)
     console.log(' ')
+
+    var time            = 0
+    var fetchInterval   = 5000
+    var fetchIntervalId = setInterval(() => {
+      time++
+      if (this.options.verbose) {
+        console.log('waiting %o seconds...', (time * fetchInterval / 1000))
+      }
+    }, fetchInterval)
+
+    if (config.showLoading) {
+      let i           = 0
+      const blinkNext = function () {
+        if (_.isNull(fetchIntervalId)) {
+          return
+        }
+        let led = ledList[i]
+        led.blink().then(() => {
+          i = i < ledList.length - 1 ? i + 1 : 0
+          blinkNext()
+        })
+      }
+      blinkNext()
+    }
 
     return new Promise((resolve, reject) => {
       rp({
         uri                    : this.uri,
+        timeout                : config.timeout,
         resolveWithFullResponse: true
       }).then((response) => {
-
+        clearInterval(fetchIntervalId)
+        fetchIntervalId = null
+        this.isRunning  = false
         if (response.statusCode >= 200 && response.statusCode <= 300) {
           this.rawContent = response.body
           let eventDates  = this.parse()
           resolve(eventDates)
         } else {
+          this.isRunning = false
           reject(response)
         }
 
       }).catch((error) => {
-
-        console.error('ERROR: Unable to fetch from Server')
+        this.isRunning = false
+        clearInterval(fetchIntervalId)
+        fetchIntervalId = null
+        console.log('ERROR: Unable to fetch from Server')
         reject(error)
       })
     })
@@ -64,8 +104,8 @@ class iCalCrawler {
       return eventDates
 
     } catch (e) {
-      console.error('ERROR: Unable to parse iCAL Data')
-      console.error(e)
+      console.log('ERROR: Unable to parse iCAL Data')
+      console.log(e)
     }
   }
 

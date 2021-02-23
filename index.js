@@ -13,6 +13,7 @@ const _                    = require('lodash')
 const config               = require('config')
 const {DateTime, Settings} = require('luxon')
 const Gpio                 = require('onoff').Gpio
+require('./util/console.js')
 
 const iCalCrawler = require('./components/eventDate/iCalCrawler.js')
 const Schedule    = require('./components/eventDate/Schedule.js')
@@ -74,21 +75,25 @@ const optionDefinitions = [
   {name: 'listEvents', type: Boolean, default: false},
   {name: 'testLeds', type: Boolean, default: false},
   {name: 'simulate', type: Boolean, default: false},
-  {name: 'date', type: String, defaultValue: DateTime.local().toFormat('y-LL-d')},
+  {name: 'date', type: String, defaultValue: DateTime.local().toFormat('yyyy-LL-dd')},
   {name: 'verbose', alias: 'v', type: Boolean},
-  {name: 'help', alias: 'h', type: Boolean, default: false},
+  {name: 'help', alias: 'h', type: Boolean, default: false}
 ]
 
-const options = commandLineArgs(optionDefinitions)
+const options = commandLineArgs(optionDefinitions, {
+  partial           : true,
+  stopAtFirstUnknown: false
+})
 
 let startDate = DateTime.fromISO(options.date)
 
 if (!startDate.isValid) {
-  console.error('Invalid Date [%s]: %s', options.date, startDate.invalidReason)
+  console.log('Invalid Date [%s]: %s', options.date, startDate.invalidReason)
   exitHandler({exit: true}, 1)
   return
 }
 
+// initialize LEDs globally
 for (let i = 0, ii = ledList.length; i < ii; i++) {
 
   if (options.verbose) {
@@ -96,7 +101,23 @@ for (let i = 0, ii = ledList.length; i < ii; i++) {
   }
 
   if (Gpio.accessible) {
-    ledList[i].led = new Gpio(ledList[i].gpio, 'out')
+    ledList[i].led   = new Gpio(ledList[i].gpio, 'out')
+    ledList[i].blink = function () {
+      return new Promise((resolve, reject) => {
+        if (options.verbose) {
+          console.log('GPIO [%o] = 1', this.gpio)
+        }
+        ledList[i].led.writeSync(1)
+        ledList[i].blinkTimeoutId = setTimeout(() => {
+          ledList[i].led.writeSync(0)
+          clearTimeout(ledList[i].led.blinkTimeoutId)
+          if (options.verbose) {
+            console.log('GPIO [%o] = 0', this.gpio)
+          }
+          resolve()
+        }, config.interval.blink)
+      })
+    }
     if (options.testLeds) {
       ledList[i].led.writeSync(1)
     }
@@ -113,7 +134,7 @@ if (true !== options.testLeds) {
     return
   }
 
-  var crawler = new iCalCrawler(url)
+  var crawler = new iCalCrawler(url, options)
   var schedule
 
   var run = function () {
@@ -131,13 +152,30 @@ if (true !== options.testLeds) {
         }
       }
 
+      if (typeof (schedule) === 'object') {
+        schedule.stop()
+      }
       schedule = new Schedule(startDate, eventDates, options)
       schedule.run()
 
     }).catch((error) => {
 
-      console.error('Error fetching or parsing data')
-      console.error(error)
+      if (error.isRunning) {
+        return
+      }
+      console.log('Error [%s] fetching or parsing data. Trying again in [%s] seconds', error.status, _.round(config.interval.retryFetchURL / 1000))
+
+      for (let i = 0, ii = ledList.length; i < ii; i++) {
+        ledList[i].blink()
+      }
+
+      if (options.verbose) {
+        console.log(error)
+      }
+
+      setTimeout(() => {
+        run()
+      }, config.interval.retryFetchURL)
 
     })
   }
@@ -164,8 +202,10 @@ function exitHandler (options, exitCode) {
       schedule.unexportOnClose()
     } else {
       for (let i = 0, ii = ledList.length; i < ii; i++) {
-        ledList[i].led.writeSync(0)
-        ledList[i].led.unexport()
+        if (_.isObject(ledList[i].led)) {
+          ledList[i].led.writeSync(0)
+          ledList[i].led.unexport()
+        }
       }
     }
   }

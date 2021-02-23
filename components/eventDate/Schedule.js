@@ -37,7 +37,7 @@ class Schedule {
 
     if (this.options.simulate) {
 
-      const firstDate = this.eventDates[0].startDate
+      const firstDate = this.eventDates[0].startDate.minus({days: 2})
       const lastDate  = this.eventDates[this.eventDates.length - 1].startDate
 
       let currentDate = firstDate
@@ -47,17 +47,24 @@ class Schedule {
       }
 
       console.log('Simulating [%s] days from [%s] to [%s]', this.demoDateList.length, firstDate.toISODate(), lastDate.toISODate())
-      console.log(' ');
+      console.log(' ')
 
       this.init(firstDate)
 
       this.dateUpdateIntervalId = setInterval(() => {
         this.demoDateIndex++
-        this.updateDate()
+        this.updateDate(this.demoDateList[this.demoDateIndex])
       }, 10000)
 
     } else {
       this.init(startDate)
+
+      this.dateUpdateIntervalId = setInterval(() => {
+        let now = DateTime.local();
+        if (false === now.hasSame(this.todayDate, 'day')) {
+          this.updateDate(now)
+        }
+      }, 60000)
     }
 
   }
@@ -66,6 +73,10 @@ class Schedule {
    * @param {DateTime} startDate
    */
   init (startDate) {
+    if (false === startDate instanceof DateTime) {
+      console.log('Invalid Date given: [%o]', startDate)
+      return
+    }
     this.todayDate    = startDate
     this.tomorrowDate = this.todayDate.plus({days: 1})
 
@@ -82,10 +93,7 @@ class Schedule {
     this.isRunning = false
 
     try {
-      clearInterval(this.today.intervalId)
-      clearInterval(this.tomorrow.intervalId)
-      clearTimeout(this.today.timeoutId)
-      clearTimeout(this.tomorrow.timeoutId)
+      this.stop()
     } catch (e) {}
 
     this.today = {
@@ -101,14 +109,7 @@ class Schedule {
     this.groupEventDates()
   }
 
-  updateDate () {
-    let todayDate
-    if (this.options.simulate) {
-      todayDate = this.demoDateList[this.demoDateIndex]
-    } else {
-      todayDate = this.todayDate
-    }
-
+  updateDate (todayDate) {
     this.lightOffTodayList()
     this.lightOffTomorrowList()
     this.init(todayDate)
@@ -118,7 +119,7 @@ class Schedule {
   run () {
     this.isRunning = true
 
-    console.log(this.toString());
+    console.log(this.toString())
 
     let interval = config.get('interval')
     this.lightOnTodayList()
@@ -139,10 +140,13 @@ class Schedule {
   }
 
   stop () {
+    console.log('stopping all intervals & timeouts');
     this.isRunning = false
 
-    clearInterval(this.today.intervalId)
     clearTimeout(this.today.timeoutId)
+    clearTimeout(this.tomorrow.timeoutId)
+    clearInterval(this.today.intervalId)
+    clearInterval(this.tomorrow.intervalId)
   }
 
   groupEventDates () {
@@ -204,16 +208,19 @@ class Schedule {
   }
 
   toString () {
-    let today    = '{y}-{m}-{d}'.parse({
-      y: this.todayDate.year,
-      m: this.todayDate.month,
-      d: this.todayDate.day
-    })
-    let tomorrow = '{y}-{m}-{d}'.parse({
-      y: this.tomorrowDate.year,
-      m: this.tomorrowDate.month,
-      d: this.tomorrowDate.day
-    })
+    // let today    = '{y}-{m}-{d}'.parse({
+    //   y: this.todayDate.year,
+    //   m: this.todayDate.month,
+    //   d: this.todayDate.day
+    // })
+    // let tomorrow = '{y}-{m}-{d}'.parse({
+    //   y: this.tomorrowDate.year,
+    //   m: this.tomorrowDate.month,
+    //   d: this.tomorrowDate.day
+    // })
+
+    let today    = this.todayDate.toFormat('yyyy-LL-dd')
+    let tomorrow = this.tomorrowDate.toFormat('yyyy-LL-dd')
 
     let todayOutput    = []
     let tomorrowOutput = []
@@ -241,7 +248,7 @@ class Schedule {
 
     var t = new Table()
     _.forEach(mergedOutput, (output) => {
-      t.cell('Today [{d}]'.parse({d: today}), output.today)
+      t.cell("\nToday [{d}]".parse({d: today}), output.today)
       t.cell('Tomorrow [{d}]'.parse({d: tomorrow}), output.tomorrow)
       t.newRow()
     })
