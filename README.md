@@ -2,9 +2,6 @@
 
 This little project is intends to read a iCAL Stream and highlight connected LEDs in their equivalent color according to the color of recycling bins.
 
-> **DISCLAIMER**
-> This is _work in progress_ and will not work yet 
-
 In Germany this is mostly something like this:
 
 * Blue: Paper

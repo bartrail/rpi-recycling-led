@@ -34,7 +34,7 @@
     },
     {
       // Residual Waste
-      "summary" : "Restmüll-Pink",
+      "summary" : "Restmüll-Grau",
       "color"   : "Gray",
       "gpio"    : 8
     },
