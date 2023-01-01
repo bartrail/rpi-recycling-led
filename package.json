@@ -26,7 +26,7 @@
   "dependencies": {
     "command-line-args": "5.0.2",
     "command-line-usage": "5.0.5",
-    "config": "2.0.1",
+    "config": "3.3.8",
     "easy-table": "1.1.1",
     "ical.js": "1.2.2",
     "lodash": "4.17.11",
